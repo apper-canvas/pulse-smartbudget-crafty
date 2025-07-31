@@ -1,0 +1,37 @@
+[
+  {
+    "Id": 1,
+    "category": "Groceries",
+    "monthlyLimit": 400,
+    "period": "January 2024",
+    "spent": 350
+  },
+  {
+    "Id": 2,
+    "category": "Transportation",
+    "monthlyLimit": 200,
+    "period": "January 2024",
+    "spent": 150
+  },
+  {
+    "Id": 3,
+    "category": "Entertainment",
+    "monthlyLimit": 150,
+    "period": "January 2024",
+    "spent": 85
+  },
+  {
+    "Id": 4,
+    "category": "Dining",
+    "monthlyLimit": 300,
+    "period": "January 2024",
+    "spent": 240
+  },
+  {
+    "Id": 5,
+    "category": "Shopping",
+    "monthlyLimit": 250,
+    "period": "January 2024",
+    "spent": 320
+  }
+]
