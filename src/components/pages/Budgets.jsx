@@ -13,18 +13,18 @@ import categoryService from "@/services/api/categoryService";
 import transactionService from "@/services/api/transactionService";
 
 const Budgets = () => {
-  const [budgets, setBudgets] = useState([]);
+const [budgets, setBudgets] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showBudgetForm, setShowBudgetForm] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
+  const [alerts, setAlerts] = useState([]);
   const [formData, setFormData] = useState({
     category: "",
     monthlyLimit: "",
     period: getCurrentMonth()
   });
-
   useEffect(() => {
     loadData();
   }, []);
@@ -229,14 +229,19 @@ const Budgets = () => {
           />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {budgets.map((budget) => (
-            <BudgetCard
-              key={budget.Id}
-              budget={budget}
-              onEdit={handleEdit}
-            />
-          ))}
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {budgets.map((budget) => {
+            const budgetAlert = alerts.find(alert => alert.budgetId === budget.Id);
+            return (
+              <BudgetCard
+                key={budget.Id}
+                budget={budget}
+                alert={budgetAlert}
+                onEdit={handleEdit}
+                onDismissAlert={(alertId) => setAlerts(prev => prev.filter(a => a.Id !== alertId))}
+              />
+            );
+          })}
         </div>
       )}
     </div>

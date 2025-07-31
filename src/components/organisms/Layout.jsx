@@ -18,7 +18,7 @@ const Layout = ({ children }) => {
     }
   };
 
-  return (
+return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar 
         isOpen={sidebarOpen} 
@@ -30,6 +30,11 @@ const Layout = ({ children }) => {
           onMenuToggle={() => setSidebarOpen(true)}
           title={getPageTitle()}
         />
+        
+        {/* Global notification area */}
+        <div className="notification-container fixed top-20 right-4 z-50 space-y-2 max-w-sm">
+          {/* Budget alerts would be rendered here */}
+        </div>
         
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <div className="container mx-auto px-6 py-8">

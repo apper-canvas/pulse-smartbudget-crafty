@@ -1,9 +1,9 @@
 import React from "react";
 import ApperIcon from "@/components/ApperIcon";
+import BudgetAlertNotification from "@/components/atoms/BudgetAlertNotification";
 import { formatCurrency, formatPercentage } from "@/utils/currency";
 import { cn } from "@/utils/cn";
-
-const BudgetCard = ({ budget, onEdit, className = "" }) => {
+const BudgetCard = ({ budget, onEdit, alert, onDismissAlert, className = "" }) => {
   const spentPercentage = (budget.spent / budget.monthlyLimit) * 100;
   const remaining = budget.monthlyLimit - budget.spent;
   const isOverBudget = spentPercentage > 100;
@@ -51,7 +51,7 @@ const BudgetCard = ({ budget, onEdit, className = "" }) => {
         </div>
         
         <div className="flex items-center justify-between">
-          <span className={cn(
+<span className={cn(
             "text-sm font-medium",
             isOverBudget ? "text-error" : remaining < budget.monthlyLimit * 0.2 ? "text-warning" : "text-success"
           )}>
@@ -61,6 +61,14 @@ const BudgetCard = ({ budget, onEdit, className = "" }) => {
             {formatPercentage(spentPercentage)}
           </span>
         </div>
+
+        {alert && (
+          <BudgetAlertNotification
+            alert={alert}
+            onDismiss={onDismissAlert}
+            className="mt-3"
+          />
+        )}
       </div>
     </div>
   );

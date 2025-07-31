@@ -51,6 +51,29 @@ class BudgetService {
     }
     const deletedBudget = this.budgets.splice(index, 1)[0];
     return { ...deletedBudget };
+}
+
+  async getAlerts() {
+    await this.delay();
+    // This would typically integrate with budgetAlertService
+    return [];
+  }
+
+  async updateAlert(budgetId, alertSettings) {
+    await this.delay();
+    // This would update alert settings for a specific budget
+    return { budgetId, ...alertSettings };
+  }
+
+  async createAlert(budgetId, alertData) {
+    await this.delay();
+    const newAlert = {
+      Id: Date.now(),
+      budgetId,
+      ...alertData,
+      createdAt: new Date().toISOString()
+    };
+    return newAlert;
   }
 
   delay() {
