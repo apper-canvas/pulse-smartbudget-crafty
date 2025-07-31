@@ -1,6 +1,7 @@
 import React from "react";
 import ApperIcon from "@/components/ApperIcon";
-import { formatCurrency, formatDate } from "@/utils/currency";
+import { formatCurrency } from "@/utils/currency";
+import { formatDate } from "@/utils/dateHelpers";
 import { cn } from "@/utils/cn";
 
 const TransactionItem = ({ transaction, onEdit, onDelete, className = "" }) => {
