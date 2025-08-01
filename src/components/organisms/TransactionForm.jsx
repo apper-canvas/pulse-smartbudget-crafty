@@ -159,7 +159,7 @@ const TransactionForm = ({ transaction, onSuccess, onCancel }) => {
         >
           <option value="">Select a category</option>
           {filteredCategories.map((category) => (
-            <option key={category.Id} value={category.name}>
+<option key={category.Id} value={category.name}>
               {category.name}
             </option>
           ))}

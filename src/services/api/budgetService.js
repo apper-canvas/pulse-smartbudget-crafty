@@ -1,72 +1,238 @@
-import budgetsData from "@/services/mockData/budgets.json";
-
 class BudgetService {
   constructor() {
-    this.budgets = [...budgetsData];
+    // Initialize ApperClient with Project ID and Public Key
+    const { ApperClient } = window.ApperSDK;
+    this.apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+    this.tableName = 'budget_c';
   }
 
   async getAll() {
-    await this.delay();
-    return [...this.budgets];
+    try {
+      const params = {
+        fields: [
+          { "field": { "Name": "Name" } },
+          { "field": { "Name": "category_c" } },
+          { "field": { "Name": "monthlyLimit_c" } },
+          { "field": { "Name": "period_c" } },
+          { "field": { "Name": "spent_c" } }
+        ],
+        orderBy: [
+          {
+            "fieldName": "Name",
+            "sorttype": "ASC"
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      // Transform database field names to UI field names
+      return response.data.map(budget => ({
+        Id: budget.Id,
+        category: budget.category_c,
+        monthlyLimit: budget.monthlyLimit_c,
+        period: budget.period_c,
+        spent: budget.spent_c || 0
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching budgets:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   }
 
   async getById(id) {
-    await this.delay();
-    const budget = this.budgets.find(b => b.Id === parseInt(id));
-    if (!budget) {
-      throw new Error("Budget not found");
+    try {
+      const params = {
+        fields: [
+          { "field": { "Name": "Name" } },
+          { "field": { "Name": "category_c" } },
+          { "field": { "Name": "monthlyLimit_c" } },
+          { "field": { "Name": "period_c" } },
+          { "field": { "Name": "spent_c" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById(this.tableName, parseInt(id), params);
+
+      if (!response || !response.data) {
+        throw new Error("Budget not found");
+      }
+
+      // Transform database field names to UI field names
+      return {
+        Id: response.data.Id,
+        category: response.data.category_c,
+        monthlyLimit: response.data.monthlyLimit_c,
+        period: response.data.period_c,
+        spent: response.data.spent_c || 0
+      };
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching budget with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    return { ...budget };
   }
 
   async create(budgetData) {
-    await this.delay();
-    const newId = Math.max(...this.budgets.map(b => b.Id)) + 1;
-    const newBudget = {
-      Id: newId,
-      ...budgetData
-    };
-    this.budgets.push(newBudget);
-    return { ...newBudget };
+    try {
+      // Transform UI field names to database field names and include only Updateable fields
+      const params = {
+        records: [{
+          Name: budgetData.category, // Use category as Name
+          category_c: budgetData.category,
+          monthlyLimit_c: parseFloat(budgetData.monthlyLimit),
+          period_c: budgetData.period,
+          spent_c: parseFloat(budgetData.spent) || 0
+        }]
+      };
+
+      const response = await this.apperClient.createRecord(this.tableName, params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create budgets ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          throw new Error("Failed to create budget");
+        }
+
+        const successfulRecord = response.results.find(result => result.success);
+        if (successfulRecord) {
+          // Transform back to UI field names
+          return {
+            Id: successfulRecord.data.Id,
+            category: successfulRecord.data.category_c,
+            monthlyLimit: successfulRecord.data.monthlyLimit_c,
+            period: successfulRecord.data.period_c,
+            spent: successfulRecord.data.spent_c || 0
+          };
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating budget:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   }
 
   async update(id, budgetData) {
-    await this.delay();
-    const index = this.budgets.findIndex(b => b.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Budget not found");
+    try {
+      // Transform UI field names to database field names and include only Updateable fields
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name: budgetData.category, // Use category as Name
+          category_c: budgetData.category,
+          monthlyLimit_c: parseFloat(budgetData.monthlyLimit),
+          period_c: budgetData.period,
+          spent_c: parseFloat(budgetData.spent) || 0
+        }]
+      };
+
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to update budgets ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          throw new Error("Failed to update budget");
+        }
+
+        const successfulRecord = response.results.find(result => result.success);
+        if (successfulRecord) {
+          // Transform back to UI field names
+          return {
+            Id: successfulRecord.data.Id,
+            category: successfulRecord.data.category_c,
+            monthlyLimit: successfulRecord.data.monthlyLimit_c,
+            period: successfulRecord.data.period_c,
+            spent: successfulRecord.data.spent_c || 0
+          };
+        }
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating budget:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    this.budgets[index] = {
-      ...this.budgets[index],
-      ...budgetData
-    };
-    return { ...this.budgets[index] };
   }
 
   async delete(id) {
-    await this.delay();
-    const index = this.budgets.findIndex(b => b.Id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Budget not found");
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await this.apperClient.deleteRecord(this.tableName, params);
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to delete budgets ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          throw new Error("Failed to delete budget");
+        }
+
+        return true;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting budget:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    const deletedBudget = this.budgets.splice(index, 1)[0];
-    return { ...deletedBudget };
-}
+  }
 
   async getAlerts() {
-    await this.delay();
     // This would typically integrate with budgetAlertService
     return [];
   }
 
   async updateAlert(budgetId, alertSettings) {
-    await this.delay();
     // This would update alert settings for a specific budget
     return { budgetId, ...alertSettings };
   }
 
   async createAlert(budgetId, alertData) {
-    await this.delay();
     const newAlert = {
       Id: Date.now(),
       budgetId,
@@ -74,10 +240,6 @@ class BudgetService {
       createdAt: new Date().toISOString()
     };
     return newAlert;
-  }
-
-  delay() {
-    return new Promise(resolve => setTimeout(resolve, Math.random() * 300 + 200));
   }
 }
 
