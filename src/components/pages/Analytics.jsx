@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
+import { toast } from "react-toastify";
+import transactionService from "@/services/api/transactionService";
 import StatCard from "@/components/molecules/StatCard";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
@@ -7,7 +9,6 @@ import Empty from "@/components/ui/Empty";
 import Button from "@/components/atoms/Button";
 import { formatCurrency, formatPercentage } from "@/utils/currency";
 import { getLastSixMonths } from "@/utils/dateHelpers";
-import transactionService from "@/services/api/transactionService";
 
 const Analytics = () => {
   const [data, setData] = useState({
@@ -19,6 +20,55 @@ const Analytics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedPeriod, setSelectedPeriod] = useState("6months");
+
+  const handleExportReport = () => {
+    try {
+      if (!data || data.transactions.length === 0) {
+        toast.error("No data available to export");
+        return;
+      }
+
+      // Generate CSV content
+      const csvContent = generateFinancialReportCSV(data);
+      
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `financial-report-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("Report exported successfully!");
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error("Failed to export report. Please try again.");
+    }
+  };
+
+  const generateFinancialReportCSV = (data) => {
+    const { transactions, stats } = data;
+    
+    let csv = "Financial Analytics Report\n";
+    csv += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
+    
+    // Summary Section
+    csv += "FINANCIAL SUMMARY\n";
+    csv += "Category,Amount\n";
+    csv += `Total Income,${formatCurrency(stats.totalIncome)}\n`;
+    csv += `Total Expenses,${formatCurrency(stats.totalExpenses)}\n`;
+    csv += `Net Income,${formatCurrency(stats.netWorth)}\n`;
+    csv += `Average Monthly Income,${formatCurrency(stats.avgMonthlyIncome)}\n`;
+    csv += `Average Monthly Expenses,${formatCurrency(stats.avgMonthlyExpenses)}\n`;
+    csv += `Savings Rate,${formatPercentage(stats.savingsRate)}\n\n`;
+    
+    return csv;
+  };
 
   useEffect(() => {
     loadAnalytics();
@@ -236,7 +286,12 @@ const Analytics = () => {
             <option value="all">All Time</option>
           </select>
           
-          <Button variant="outline" size="sm" leftIcon="Download">
+<Button 
+            variant="outline" 
+            size="sm" 
+            leftIcon="Download"
+            onClick={handleExportReport}
+          >
             Export Report
           </Button>
         </div>
