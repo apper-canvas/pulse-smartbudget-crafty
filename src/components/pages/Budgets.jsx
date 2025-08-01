@@ -143,77 +143,83 @@ const [budgets, setBudgets] = useState([]);
       </div>
 
       {/* Budget Form */}
+{/* Budget Modal */}
       {showBudgetForm && (
-        <div className="bg-white rounded-xl p-6 card-shadow animate-scale-up">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">
-              {editingBudget ? "Edit Budget" : "Create New Budget"}
-            </h3>
-            <button
-              onClick={handleCancel}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-            >
-              <ApperIcon name="X" className="w-5 h-5" />
-            </button>
-          </div>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                label="Category"
-                type="select"
-                value={formData.category}
-                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                required
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div 
+            className="bg-white rounded-xl p-6 card-shadow animate-scale-up w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {editingBudget ? "Edit Budget" : "Create New Budget"}
+              </h3>
+              <button
+                onClick={handleCancel}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
               >
-                <option value="">Select a category</option>
-                {availableCategories.map((category) => (
-                  <option key={category.Id} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-              </FormField>
+                <ApperIcon name="X" className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  label="Category"
+                  type="select"
+                  value={formData.category}
+                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                  required
+                >
+                  <option value="">Select a category</option>
+                  {availableCategories.map((category) => (
+                    <option key={category.Id} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </FormField>
+                
+                <FormField
+                  label="Monthly Limit"
+                  type="number"
+                  value={formData.monthlyLimit}
+                  onChange={(e) => setFormData(prev => ({ ...prev, monthlyLimit: e.target.value }))}
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  required
+                />
+              </div>
               
               <FormField
-                label="Monthly Limit"
-                type="number"
-                value={formData.monthlyLimit}
-                onChange={(e) => setFormData(prev => ({ ...prev, monthlyLimit: e.target.value }))}
-                placeholder="0.00"
-                step="0.01"
-                min="0"
+                label="Period"
+                value={formData.period}
+                onChange={(e) => setFormData(prev => ({ ...prev, period: e.target.value }))}
+                placeholder="e.g., January 2024"
                 required
               />
-            </div>
-            
-            <FormField
-              label="Period"
-              value={formData.period}
-              onChange={(e) => setFormData(prev => ({ ...prev, period: e.target.value }))}
-              placeholder="e.g., January 2024"
-              required
-            />
-            
-            <div className="flex space-x-4">
-              <Button
-                type="submit"
-                variant="primary"
-                leftIcon={editingBudget ? "Save" : "Plus"}
-                className="flex-1"
-              >
-                {editingBudget ? "Update Budget" : "Create Budget"}
-              </Button>
               
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleCancel}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
+              <div className="flex space-x-4">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  leftIcon={editingBudget ? "Save" : "Plus"}
+                  className="flex-1"
+                >
+                  {editingBudget ? "Update Budget" : "Create Budget"}
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCancel}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
