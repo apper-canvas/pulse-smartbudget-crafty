@@ -239,5 +239,3 @@ class TransactionService {
 }
 
 export default new TransactionService();
-
-export default new TransactionService();

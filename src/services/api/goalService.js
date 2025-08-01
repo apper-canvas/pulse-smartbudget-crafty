@@ -227,5 +227,3 @@ class GoalService {
 }
 
 export default new GoalService();
-
-export default new GoalService();
