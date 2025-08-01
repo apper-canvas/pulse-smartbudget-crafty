@@ -122,80 +122,86 @@ const Goals = () => {
       </div>
 
       {/* Goal Form */}
+{/* Goal Modal */}
       {showGoalForm && (
-        <div className="bg-white rounded-xl p-6 card-shadow animate-scale-up">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">
-              {editingGoal ? "Edit Goal" : "Create New Goal"}
-            </h3>
-            <button
-              onClick={handleCancel}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-            >
-              <ApperIcon name="X" className="w-5 h-5" />
-            </button>
-          </div>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <FormField
-              label="Goal Name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g., Emergency Fund, Vacation, New Car"
-              required
-            />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div 
+            className="bg-white rounded-xl p-6 card-shadow animate-scale-up w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {editingGoal ? "Edit Goal" : "Create New Goal"}
+              </h3>
+              <button
+                onClick={handleCancel}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <ApperIcon name="X" className="w-5 h-5" />
+              </button>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <FormField
-                label="Target Amount"
-                type="number"
-                value={formData.targetAmount}
-                onChange={(e) => setFormData(prev => ({ ...prev, targetAmount: e.target.value }))}
-                placeholder="0.00"
-                step="0.01"
-                min="0"
+                label="Goal Name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g., Emergency Fund, Vacation, New Car"
                 required
               />
               
-              <FormField
-                label="Current Amount"
-                type="number"
-                value={formData.currentAmount}
-                onChange={(e) => setFormData(prev => ({ ...prev, currentAmount: e.target.value }))}
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-              />
-            </div>
-            
-            <FormField
-              label="Target Date"
-              type="date"
-              value={formData.deadline}
-              onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
-              required
-            />
-            
-            <div className="flex space-x-4">
-              <Button
-                type="submit"
-                variant="primary"
-                leftIcon={editingGoal ? "Save" : "Plus"}
-                className="flex-1"
-              >
-                {editingGoal ? "Update Goal" : "Create Goal"}
-              </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  label="Target Amount"
+                  type="number"
+                  value={formData.targetAmount}
+                  onChange={(e) => setFormData(prev => ({ ...prev, targetAmount: e.target.value }))}
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  required
+                />
+                
+                <FormField
+                  label="Current Amount"
+                  type="number"
+                  value={formData.currentAmount}
+                  onChange={(e) => setFormData(prev => ({ ...prev, currentAmount: e.target.value }))}
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
               
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleCancel}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
+              <FormField
+                label="Target Date"
+                type="date"
+                value={formData.deadline}
+                onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
+                required
+              />
+              
+              <div className="flex space-x-4">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  leftIcon={editingGoal ? "Save" : "Plus"}
+                  className="flex-1"
+                >
+                  {editingGoal ? "Update Goal" : "Create Goal"}
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCancel}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
